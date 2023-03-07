@@ -107,6 +107,31 @@ def get_info_planeta(planetas_id):
     }
     return jsonify(response_body), 200
 
+# OBTENER FAVORTIOS
+@app.route('/favoritos', methods=['GET'])
+def get_favortios():
+    # Declaración de las Querys
+    favoritos_query = Favoritos.query.all()
+    results = list(map(lambda item: item.serialize(),favoritos_query))
+    response_body = {
+        "msg": "GET /favortios = ok",
+        "results": results
+    }
+    return jsonify(response_body), 200
+
+# OBTENER FAVORITOS DE UN USUARIO
+@app.route('/user/<int:user_id/favoritos>', methods=['GET'])
+def get_info_favoritos(user_id):
+    # Declaración de las Querys
+    favoritos_query = Favoritos.query.filter_by(id=user_id).all()
+    results = list(map(lambda item: item.serialize(), favoritos_query))
+    response_body = {
+        "msg": "GET /favorito = ok",
+        "results": results
+    }
+    return jsonify(response_body), 200
+
+
 
 ################# POST #######################
 
@@ -144,7 +169,7 @@ def crear_personaje():
     else:
         return jsonify({"msg":"El personaje ya existe"}), 400
 
-# CREAR NUEVO PLAMETA 
+# CREAR NUEVO PLANETA 
 @app.route('/planetas', methods=['POST'])
 def crear_planeta():
     request_body = request.json
@@ -161,7 +186,73 @@ def crear_planeta():
     else:
         return jsonify({"msg":"El planeta ya existe"}), 400
 
+#AÑADIR PLANETA FAVORITO
+@app.route('/favoritos/planetas/<int:planetas_id>', methods=['POST'])
+def crear_planeta_favorito(planetas_id):
+    request_body = request.json
+    planeta_fav = Favoritos(user_id=request_body["user_id"], planetas_id=planetas_id)
+    db.session.add(planeta_fav)
+    db.session.commit()
+    response_body = {
+            "msg": "Planeta añadido a favoritos",
+        }
 
+    return jsonify(response_body), 200
+
+#AÑADIR PERSONAJE FAVORITO
+@app.route('/favoritos/personajes/<int:personajes_id>', methods=['POST'])
+def crear_personaje_favorito(personajes_id):
+    request_body = request.json
+    personaje_fav = Favoritos(user_id=request_body["user_id"], personajes_id=personajes_id)
+    db.session.add(personaje_fav)
+    db.session.commit()
+    response_body = {
+            "msg": "El personaje fue añadido a favortiso",
+        }
+
+    return jsonify(response_body), 200
+
+
+
+############################################  DELETE ##############################################################
+
+# ELIMINAR UN PERSONAJE
+@app.route('/personajes/<int:position>', methods=['DELETE'])
+def delete_personajes(position):
+    personajes_query = Personajes.query.filter_by(id=position).first()
+    if personajes_query is None : 
+        response_body = {
+            "msg": "el personaje no existe",
+        }
+        return  jsonify(response_body), 200
+    else :
+        db.session.delete(personajes_query)
+        db.session.commit()
+        
+        response_body = {
+                "msg": "el personaje fue eliminado",
+                "result": personajes_query.serialize()
+            }
+        return  jsonify(response_body), 200
+
+# ELIMINAR UN PERSONAJE FAVORITO DE UN USUARIO
+@app.route('/favoritos/personajes/<int:position>', methods=['DELETE'])
+def borrar_personaje_favorito(position):
+    request_body = request.json
+    personaje_query = Favoritos.query.filter_by(user_id=request_body["user_id"], personajes_id=position).first()
+    if personaje_query is None : 
+        response_body = {
+            "msg": "el personaje no existe",
+        }
+        return  jsonify(response_body), 200
+    else :
+        db.session.delete(personaje_query)
+        db.session.commit()
+        response_body = {
+                "msg": "el personaje fue eliminado",
+                "result": personaje_query.serialize()
+            }
+        return  jsonify(response_body), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
