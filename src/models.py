@@ -18,6 +18,7 @@ class User(db.Model):
             "id": self.id,
             "nombre": self.nombre,
             "email": self.email,
+            "favoritos": self.favoritos,
         }
 
 class Personajes(db.Model):
@@ -38,6 +39,7 @@ class Personajes(db.Model):
             "altura": self.altura,
             "genero": self.genero,
             "peso": self.peso,
+            "favoritos": self.favoritos,
         }
 
 class Planetas(db.Model):
@@ -58,6 +60,7 @@ class Planetas(db.Model):
             "habitantes": self.habitantes,
             "periodo_orbital": self.periodo_orbital,
             "diametro": self.diametro,
+            "favoritos": self.favoritos,
         }
 
 class Favoritos(db.Model):

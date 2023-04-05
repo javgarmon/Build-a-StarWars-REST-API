@@ -40,7 +40,7 @@ def sitemap():
 
 # OBTENER INFO DE TODOS LOS USUARIOS
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def get_all_users():
     # Declaración de las Querys
     users_query = User.query.all()
     results = list(map(lambda item: item.serialize(), users_query))
@@ -60,7 +60,7 @@ def get_info_user(user_id):
     }
     return jsonify(response_body), 200
 
-# # OBTENER INFO PERSONAJES
+# OBTENER INFO PERSONAJES
 @app.route('/personajes', methods=['GET'])
 def info_personajes():
     # Declaración de las Querys
@@ -119,12 +119,12 @@ def get_favortios():
     }
     return jsonify(response_body), 200
 
-# OBTENER FAVORITOS DE UN USUARIO
-@app.route('/user/<int:user_id/favoritos>', methods=['GET'])
-def get_info_favoritos(user_id):
+# OBTENER UN FAVORITO
+@app.route('/favoritos/<int:favoritos_id>', methods=['GET'])
+def get_one_favorito(favoritos_id):
     # Declaración de las Querys
-    favoritos_query = Favoritos.query.filter_by(id=user_id).all()
-    results = list(map(lambda item: item.serialize(), favoritos_query))
+    favorito_query = Favoritos.query.filter_by(id=favoritos_id).all()
+    results = list(map(lambda item: item.serialize(), favorito_query))
     response_body = {
         "msg": "GET /favorito = ok",
         "results": results
